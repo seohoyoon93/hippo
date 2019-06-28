@@ -8,7 +8,6 @@ export default class Register extends Component {
     this.onPress = this.onPress.bind(this);
   }
   onPress() {
-    console.log(this.props);
     this.props.navigation.navigate("UnitSetting");
   }
   render() {

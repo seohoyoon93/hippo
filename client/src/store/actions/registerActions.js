@@ -57,6 +57,7 @@ export const calculateGoal = () => {
     if (training === "intense") {
       goal += Math.floor((1200 * (weightInt / 75)) / 100) * 100;
     }
+    goal = goal.toString();
 
     dispatch({ type: CALCULATE_GOAL, goal });
   };
