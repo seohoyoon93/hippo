@@ -69,7 +69,7 @@ export const setGoal = goal => {
   };
 };
 
-export const register = () => {
+export const register = lang => {
   return async (dispatch, getState) => {
     const {
       unit,
@@ -80,7 +80,7 @@ export const register = () => {
       goal
     } = getState().register;
 
-    fetch("https://localhost:5000/api/v1/users", {
+    fetch("http://localhost:5000/api/v1/users", {
       method: "POST",
       headers: {
         Accept: "application/json",
@@ -92,7 +92,9 @@ export const register = () => {
         height: parseInt(height),
         weight: parseInt(weight),
         training,
-        goal: parseInt(goal)
+        goal: parseInt(goal),
+        lang,
+        allowed_notification: false
       })
     });
 

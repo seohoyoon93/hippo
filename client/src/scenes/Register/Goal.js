@@ -1,6 +1,13 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { View, Text, TextInput, Button } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  Button,
+  Platform,
+  NativeModules
+} from "react-native";
 
 import { setGoal, register } from "../../store/actions/registerActions";
 
@@ -12,7 +19,11 @@ class Goal extends Component {
   }
 
   async onPressStart() {
-    this.props.register();
+    const deviceLanguage =
+      Platform.OS === "ios"
+        ? NativeModules.SettingsManager.settings.AppleLocale
+        : NativeModules.I18nManager.localeIdentifier;
+    this.props.register(deviceLanguage);
     await this.props.navigation.navigate("Main");
   }
 
@@ -48,7 +59,7 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
   return {
     setGoal: goal => dispatch(setGoal(goal)),
-    register: () => dispatch(register())
+    register: lang => dispatch(register(lang))
   };
 };
 
