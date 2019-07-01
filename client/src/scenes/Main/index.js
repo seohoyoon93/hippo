@@ -18,7 +18,10 @@ class Main extends Component {
     fetch(`http://localhost:5000/api/v1/drinks?id=${id}&from=${from}`).then(
       res =>
         res.json().then(waters => {
-          let total = waters.reduce((acc, cur) => acc.amount + cur.amount);
+          let total = 0;
+          waters.forEach(item => {
+            total += item.amount;
+          });
           this.setState({ total, waters });
         })
     );
