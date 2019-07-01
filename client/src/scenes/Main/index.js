@@ -1,6 +1,10 @@
 import React, { Component } from "react";
 import { View, Text, Button } from "react-native";
+import { connect } from "react-redux";
 import AsyncStorage from "@react-native-community/async-storage";
+import GestureRecognizer from "react-native-swipe-gestures";
+
+import { fetchedGoal } from "../../store/main/actions";
 
 class Main extends Component {
   constructor(props) {
@@ -8,8 +12,7 @@ class Main extends Component {
 
     this.state = {
       waters: [],
-      total: 0,
-      goal: null
+      total: 0
     };
   }
   async componentDidMount() {
@@ -27,34 +30,65 @@ class Main extends Component {
     );
     fetch(`http://localhost:5000/api/v1/users/${id}`).then(res =>
       res.json().then(user => {
-        this.setState({ goal: user[0].goal });
+        this.props.fetchedGoal(user[0].goal);
       })
     );
   }
+
   render() {
-    const percentage = Math.floor((this.state.total / this.state.goal) * 100);
+    const percentage = Math.floor((this.state.total / this.props.goal) * 100);
+    const config = {
+      velocityThreshold: 0.3,
+      directionalOffsetThreshold: 80
+    };
     return (
-      <View style={{ marginTop: 30 }}>
-        <Button
-          title="설정"
-          onPress={() => this.props.navigation.navigate("Settings")}
-        />
-        <View>
-          <Text>알림설정도</Text>
-          <Text>있포!!</Text>
+      <GestureRecognizer
+        onSwipeUp={() => {
+          this.props.navigation.navigate("History");
+        }}
+        config={config}
+        style={{
+          flex: 1,
+          backgroundColor: this.state.backgroundColor
+        }}
+      >
+        <View style={{ marginTop: 30 }}>
+          <Button
+            title="설정"
+            onPress={() => this.props.navigation.navigate("Settings")}
+          />
+          <View>
+            <Text>알림설정도</Text>
+            <Text>있포!!</Text>
+          </View>
+          <Text>{percentage}%</Text>
+          <Button
+            title="마셔"
+            onPress={() => this.props.navigation.navigate("AddWater")}
+          />
+          <Button
+            title="차트"
+            onPress={() => this.props.navigation.navigate("History")}
+          />
         </View>
-        <Text>{percentage}%</Text>
-        <Button
-          title="마셔"
-          onPress={() => this.props.navigation.navigate("AddWater")}
-        />
-        <Button
-          title="차트"
-          onPress={() => this.props.navigation.navigate("History")}
-        />
-      </View>
+      </GestureRecognizer>
     );
   }
 }
 
-export default Main;
+const mapStateToProps = state => {
+  return {
+    goal: state.main.goal
+  };
+};
+
+const mapDispatchToProps = dispatch => {
+  return {
+    fetchedGoal: goal => dispatch(fetchedGoal(goal))
+  };
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Main);

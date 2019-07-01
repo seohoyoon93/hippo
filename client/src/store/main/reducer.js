@@ -1,7 +1,8 @@
-import { SET_AMOUNT } from "./actionTypes";
+import { SET_AMOUNT, FETCHED_GOAL } from "./actionTypes";
 
 const initialState = {
-  amount: ""
+  amount: "",
+  goal: null
 };
 
 const mainReducer = (state = initialState, action) => {
@@ -10,6 +11,12 @@ const mainReducer = (state = initialState, action) => {
       return {
         ...state,
         amount: action.amount
+      };
+
+    case FETCHED_GOAL:
+      return {
+        ...state,
+        goal: action.goal
       };
 
     default:
