@@ -1,5 +1,6 @@
 const express = require("express");
 const Pool = require("pg").Pool;
+const uuidv4 = require("uuid/v4");
 
 const router = express.Router();
 
@@ -106,15 +107,19 @@ router.post("/", (req, res) => {
     training,
     goal,
     lang,
+    device_id,
     allowed_notification,
     notification_start_time,
     notification_end_time,
     notification_period
   } = req.body;
 
+  const uuid = uuidv4();
+
   pool.query(
-    "INSERT INTO users (unit, height, weight, gender, training, goal, lang, allowed_notification, notification_start_time, notification_end_time, notification_period) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)",
+    "INSERT INTO users (uuid, unit, height, weight, gender, training, goal, lang, device_id, allowed_notification, notification_start_time, notification_end_time, notification_period) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) RETURNING uuid",
     [
+      uuid,
       unit,
       height,
       weight,
@@ -122,6 +127,7 @@ router.post("/", (req, res) => {
       training,
       goal,
       lang,
+      device_id,
       allowed_notification,
       notification_start_time,
       notification_end_time,
@@ -131,7 +137,7 @@ router.post("/", (req, res) => {
       if (error) {
         throw error;
       }
-      res.status(201).send(`User added with ID: ${result}`);
+      res.status(201).send(result.rows[0].uuid);
     }
   );
 });

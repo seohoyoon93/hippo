@@ -8,6 +8,7 @@ import {
   Platform,
   NativeModules
 } from "react-native";
+import DeviceInfo from "react-native-device-info";
 
 import { setGoal, register } from "../../store/actions/registerActions";
 
@@ -19,11 +20,12 @@ class Goal extends Component {
   }
 
   async onPressStart() {
+    const deviceId = DeviceInfo.getUniqueID();
     const deviceLanguage =
       Platform.OS === "ios"
         ? NativeModules.SettingsManager.settings.AppleLocale
         : NativeModules.I18nManager.localeIdentifier;
-    this.props.register(deviceLanguage);
+    this.props.register(deviceLanguage, deviceId);
     await this.props.navigation.navigate("Main");
   }
 
@@ -59,7 +61,7 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
   return {
     setGoal: goal => dispatch(setGoal(goal)),
-    register: lang => dispatch(register(lang))
+    register: (lang, deviceId) => dispatch(register(lang, deviceId))
   };
 };
 

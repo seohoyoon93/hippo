@@ -10,6 +10,7 @@ export default class Register extends Component {
   onPress() {
     this.props.navigation.navigate("UnitSetting");
   }
+
   render() {
     return (
       <View style={styles.container}>

@@ -8,6 +8,7 @@ import {
   SET_GOAL,
   REGISTER
 } from "../actionTypes";
+import AsyncStorage from "@react-native-community/async-storage";
 
 export const selectUnit = unit => {
   return dispatch => {
@@ -69,7 +70,7 @@ export const setGoal = goal => {
   };
 };
 
-export const register = lang => {
+export const register = (lang, device_id) => {
   return async (dispatch, getState) => {
     const {
       unit,
@@ -94,10 +95,16 @@ export const register = lang => {
         training,
         goal: parseInt(goal),
         lang,
-        allowed_notification: false
+        allowed_notification: false,
+        device_id
       })
-    });
+    }).then(res => {
+      res.text().then(uuid => {
+        AsyncStorage.setItem("isFirst", "false");
+        AsyncStorage.setItem("token", uuid);
 
-    dispatch({ type: REGISTER });
+        dispatch({ type: REGISTER });
+      });
+    });
   };
 };
