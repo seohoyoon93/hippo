@@ -8,7 +8,8 @@ class Main extends Component {
 
     this.state = {
       waters: [],
-      total: null
+      total: 0,
+      goal: null
     };
   }
   async componentDidMount() {
@@ -21,8 +22,14 @@ class Main extends Component {
           this.setState({ total, waters });
         })
     );
+    fetch(`http://localhost:5000/api/v1/users/${id}`).then(res =>
+      res.json().then(user => {
+        this.setState({ goal: user[0].goal });
+      })
+    );
   }
   render() {
+    const percentage = Math.floor((this.state.total / this.state.goal) * 100);
     return (
       <View style={{ marginTop: 30 }}>
         <Button
@@ -33,7 +40,7 @@ class Main extends Component {
           <Text>알림설정도</Text>
           <Text>있포!!</Text>
         </View>
-        <Text>{this.state.total}</Text>
+        <Text>{percentage}%</Text>
         <Button
           title="마셔"
           onPress={() => this.props.navigation.navigate("AddWater")}

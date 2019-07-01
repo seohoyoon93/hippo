@@ -15,7 +15,7 @@ const pool = new Pool({
 
 // Get user settings
 router.get("/:id", (req, res) => {
-  const id = parseInt(req.params.id);
+  const id = req.params.id;
 
   pool.query("SELECT * FROM users WHERE id = $1", [id], (error, results) => {
     if (error) {
