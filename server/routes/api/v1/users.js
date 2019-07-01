@@ -114,12 +114,12 @@ router.post("/", (req, res) => {
     notification_period
   } = req.body;
 
-  const uuid = uuidv4();
+  const id = uuidv4();
 
   pool.query(
-    "INSERT INTO users (uuid, unit, height, weight, gender, training, goal, lang, device_id, allowed_notification, notification_start_time, notification_end_time, notification_period) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) RETURNING uuid",
+    "INSERT INTO users (id, unit, height, weight, gender, training, goal, lang, device_id, allowed_notification, notification_start_time, notification_end_time, notification_period) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) RETURNING id",
     [
-      uuid,
+      id,
       unit,
       height,
       weight,
@@ -137,7 +137,7 @@ router.post("/", (req, res) => {
       if (error) {
         throw error;
       }
-      res.status(201).send(result.rows[0].uuid);
+      res.status(201).send(result.rows[0].id);
     }
   );
 });

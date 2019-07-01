@@ -1,10 +1,10 @@
-import { createBottomTabNavigator } from "react-navigation";
+import { createSwitchNavigator } from "react-navigation";
 
 import ModalNavigator from "./ModalNavigator";
 import History from "../scenes/Main/History";
 import SettingsNavigator from "./SettingsNavigator";
 
-const MainNavigator = createBottomTabNavigator({
+const MainNavigator = createSwitchNavigator({
   Main: ModalNavigator,
   History: History,
   Settings: SettingsNavigator

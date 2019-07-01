@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { View, Text, Picker, Button } from "react-native";
 
-import { selectUnit } from "../../store/actions/registerActions";
+import { selectUnit } from "../../store/register/actions";
 
 class UnitSetting extends Component {
   render() {

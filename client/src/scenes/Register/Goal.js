@@ -10,7 +10,8 @@ import {
 } from "react-native";
 import DeviceInfo from "react-native-device-info";
 
-import { setGoal, register } from "../../store/actions/registerActions";
+import { setGoal } from "../../store/register/actions";
+import { register } from "../../api";
 
 class Goal extends Component {
   constructor(props) {
@@ -25,7 +26,17 @@ class Goal extends Component {
       Platform.OS === "ios"
         ? NativeModules.SettingsManager.settings.AppleLocale
         : NativeModules.I18nManager.localeIdentifier;
-    this.props.register(deviceLanguage, deviceId);
+    const userData = {
+      unit: this.props.unit,
+      gender: this.props.gender,
+      height: this.props.height,
+      weight: this.props.weight,
+      training: this.props.training,
+      goal: this.props.goal,
+      lang: deviceLanguage,
+      device_id: deviceId
+    };
+    register(userData);
     await this.props.navigation.navigate("Main");
   }
 
@@ -54,14 +65,19 @@ class Goal extends Component {
 
 const mapStateToProps = state => {
   return {
-    goal: state.register.goal
+    goal: state.register.goal,
+    unit: state.register.unit,
+    height: state.register.height,
+    gender: state.register.gender,
+    weight: state.register.weight,
+    training: state.register.training
   };
 };
 
 const mapDispatchToProps = dispatch => {
   return {
-    setGoal: goal => dispatch(setGoal(goal)),
-    register: (lang, deviceId) => dispatch(register(lang, deviceId))
+    setGoal: goal => dispatch(setGoal(goal))
+    // register: (lang, deviceId) => dispatch(register(lang, deviceId))
   };
 };
 

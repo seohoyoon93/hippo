@@ -7,7 +7,7 @@ import {
   CALCULATE_GOAL,
   SET_GOAL,
   REGISTER
-} from "../actionTypes";
+} from "./actionTypes";
 
 const initialState = {
   unit: "metric",

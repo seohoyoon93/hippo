@@ -5,10 +5,8 @@ import {
   SET_WEIGHT,
   SELECT_TRAINING,
   CALCULATE_GOAL,
-  SET_GOAL,
-  REGISTER
-} from "../actionTypes";
-import AsyncStorage from "@react-native-community/async-storage";
+  SET_GOAL
+} from "./actionTypes";
 
 export const selectUnit = unit => {
   return dispatch => {
@@ -67,44 +65,5 @@ export const calculateGoal = () => {
 export const setGoal = goal => {
   return dispatch => {
     dispatch({ type: SET_GOAL, goal });
-  };
-};
-
-export const register = (lang, device_id) => {
-  return async (dispatch, getState) => {
-    const {
-      unit,
-      gender,
-      height,
-      weight,
-      training,
-      goal
-    } = getState().register;
-
-    fetch("http://localhost:5000/api/v1/users", {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        unit,
-        gender,
-        height: parseInt(height),
-        weight: parseInt(weight),
-        training,
-        goal: parseInt(goal),
-        lang,
-        allowed_notification: false,
-        device_id
-      })
-    }).then(res => {
-      res.text().then(uuid => {
-        AsyncStorage.setItem("isFirst", "false");
-        AsyncStorage.setItem("token", uuid);
-
-        dispatch({ type: REGISTER });
-      });
-    });
   };
 };

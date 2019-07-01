@@ -7,7 +7,7 @@ import AsyncStorage from "@react-native-community/async-storage";
 
 import RegisterNavigator from "./src/navigators/RegisterNavigator";
 import MainNavigator from "./src/navigators/MainNavigator";
-import rootReducer from "./src/store/reducers/rootReducer";
+import rootReducer from "./src/store/rootReducer";
 
 const store = createStore(rootReducer, compose(applyMiddleware(thunk)));
 
@@ -25,7 +25,7 @@ export default class App extends Component {
       AsyncStorage.getItem("isFirst")
         .then(res => {
           if (res !== null) {
-            resolve(true);
+            resolve(false);
           } else {
             resolve(true);
           }

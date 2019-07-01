@@ -8,7 +8,7 @@ import {
   setWeight,
   selectTraining,
   calculateGoal
-} from "../../store/actions/registerActions";
+} from "../../store/register/actions";
 
 class UserInfo extends Component {
   constructor(props) {
