@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { View, Text } from "react-native";
+import { View, Text, Button } from "react-native";
 import { connect } from "react-redux";
 import AsyncStorage from "@react-native-community/async-storage";
 import GestureRecognizer from "react-native-swipe-gestures";
@@ -70,22 +70,24 @@ class History extends Component {
         let waters = this.state.waters;
         let i = 0;
         while (data[i] !== undefined) {
-          const ref = new Date(data[i].created_at * 1000);
+          const ref = new Date(data[i].created_at);
           const date = ref.getDate();
           const day = ref.getDay();
           let waterOfTheDay = waters.filter(item => item.date === date)[0];
+          let indexOfTheDay = waters.findIndex(item => item.date === date);
           if (waterOfTheDay === undefined) {
             waters.push({
               date: date,
               day: day,
-              amount: waters[i].amount
+              amount: data[i].amount,
+              key: ref.getTime()
             });
           } else {
             waterOfTheDay = {
               ...waterOfTheDay,
               amount: waterOfTheDay.amount + data[i].amount
             };
-            waters.splice(i, 1, waterOfTheDay);
+            waters.splice(indexOfTheDay, 1, waterOfTheDay);
           }
           i++;
         }
@@ -115,6 +117,8 @@ class History extends Component {
         </View>
       );
     });
+    const selectedItem = this.state.waters[this.state.selected];
+    const amount = selectedItem !== undefined ? selectedItem.amount : "";
     return (
       <GestureRecognizer
         onSwipeDown={() => {
@@ -123,7 +127,11 @@ class History extends Component {
         style={{ flex: 1, backgroundColor: "#bde3fc" }}
       >
         <View style={{ marginTop: 100 }}>
-          <Text />
+          <Button
+            title="홈"
+            onPress={() => this.props.navigation.navigate("Main")}
+          />
+          <Text>{amount}</Text>
           <View style={{ flexDirection: "row" }}>{charts}</View>
         </View>
       </GestureRecognizer>
