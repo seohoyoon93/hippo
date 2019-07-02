@@ -27,7 +27,7 @@ router.get("/:id", (req, res) => {
 
 // Update user settings
 router.put("/:id", (req, res) => {
-  const id = parseInt(req.params.id);
+  const id = req.params.id;
 
   const lang = req.body.lang;
   const goal = req.body.goal;
@@ -40,58 +40,59 @@ router.put("/:id", (req, res) => {
   const weight = req.body.weight;
 
   if (lang !== undefined) {
-    updateSetting("lang", lang, id, res);
+    updateSetting("lang", lang, id);
   }
 
   if (goal !== undefined) {
     const goalValue = parseInt(goal);
-    updateSetting("goal", goalValue, id, res);
+    updateSetting("goal", goalValue, id);
   }
 
   if (notification !== undefined) {
     const allowed_notification = notification === "true";
-    updateSetting("allowed_notification", notification, id, res);
+    updateSetting("allowed_notification", allowed_notification, id);
   }
 
   if (notiStartTime !== undefined) {
     const notiStartTimeValue = parseInt(notiStartTime);
-    updateSetting("notification_start_time", notiStartTimeValue, id, res);
+    updateSetting("notification_start_time", notiStartTimeValue, id);
   }
 
   if (notiEndTime !== undefined) {
     const notiEndTimeValue = parseInt(notiEndTime);
-    updateSetting("notification_end_time", notiEndTimeValue, id, res);
+    updateSetting("notification_end_time", notiEndTimeValue, id);
   }
 
   if (notiPeriod !== undefined) {
     const notiPeriodValue = parseInt(notiPeriod);
-    updateSetting("notification_period", notiPeriodValue, id, res);
+    updateSetting("notification_period", notiPeriodValue, id);
   }
 
   if (unit !== undefined) {
-    updateSetting("unit", unit, id, res);
+    updateSetting("unit", unit, id);
   }
 
   if (height !== undefined) {
     const heightValue = parseInt(height);
-    updateSetting("height", heightValue, id, res);
+    updateSetting("height", heightValue, id);
   }
 
   if (weight !== undefined) {
     const weightValue = parseInt(weight);
-    updateSetting("weight", weightValue, id, res);
+    updateSetting("weight", weightValue, id);
   }
+
+  res.status(200).send(`User modified with ID: ${id}`);
 });
 
-const updateSetting = (row, value, id, res) => {
+const updateSetting = (row, value, id) => {
   pool.query(
     `UPDATE users SET ${row} = $1 WHERE id = $2`,
     [value, id],
-    (error, results) => {
+    (error, result) => {
       if (error) {
         throw error;
       }
-      res.status(200).send(`User modified with ID: ${id}`);
       return;
     }
   );

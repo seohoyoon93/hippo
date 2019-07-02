@@ -1,8 +1,102 @@
 import React, { Component } from "react";
-import { View, Text, Button, Picker, TextInput } from "react-native";
+import { View, Text, Button, Picker, TextInput, Alert } from "react-native";
 import { connect } from "react-redux";
+import AsyncStorage from "@react-native-community/async-storage";
 
+import { saveGoal } from "../../store/settings/actions";
 class Goal extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      goal: this.props.goal.toString(),
+      height: this.props.height.toString(),
+      weight: this.props.weight.toString(),
+      gender: this.props.gender,
+      unit: this.props.unit,
+      training: this.props.training,
+      hasChanged: false,
+      userId: null
+    };
+
+    this.handleBlur = this.handleBlur.bind(this);
+    this.calculateGoal = this.calculateGoal.bind(this);
+    this.setUnit = this.setUnit.bind(this);
+  }
+  async componentDidMount() {
+    const id = await AsyncStorage.getItem("user_id");
+    this.setState({ userId: id });
+  }
+
+  handleBlur(target) {
+    const hasChanged =
+      target === "height"
+        ? this.state.height !== this.props.height
+        : this.state.weight !== this.props.weight;
+    if (hasChanged) {
+      Alert.alert(
+        "일일목표량을 변경하시겠어요?",
+        "입력한 정보로 일일목표량을 새로 계산했어요! 변경하시겠어요?",
+        [
+          { text: "확인", onPress: () => this.calculateGoal() },
+          { text: "취소" }
+        ],
+        { cancelable: false }
+      );
+      this.setState({ hasChanged });
+    }
+  }
+
+  calculateGoal() {
+    const heightInt =
+      this.state.unit === "metric"
+        ? parseInt(this.state.height)
+        : parseInt(this.state.height) * 2.54;
+    const weightInt =
+      this.state.unit === "metric"
+        ? parseInt(this.state.weight)
+        : parseInt(this.state.weight) * 2.2;
+
+    let goal = Math.floor((heightInt + weightInt) / 10) * 100;
+
+    if (training === "normal") {
+      goal += Math.floor((800 * (weightInt / 75)) / 100) * 100;
+    }
+
+    if (training === "intense") {
+      goal += Math.floor((1200 * (weightInt / 75)) / 100) * 100;
+    }
+    goal = goal.toString();
+
+    this.setState({ goal });
+  }
+
+  setUnit(unit) {
+    if (unit === "metric") {
+      height = Math.floor(parseInt(this.state.height) * 2.54).toString();
+      weight = Math.floor(parseInt(this.state.weight) * 2.54).toString();
+      goal = Math.floor(parseInt(this.state.goal) * 29.5735).toString();
+
+      this.setState({
+        ...state,
+        height,
+        weight,
+        goal
+      });
+    } else {
+      height = Math.floor(parseInt(this.state.height) / 2.54).toString();
+      weight = Math.floor(parseInt(this.state.weight) / 2.54).toString();
+      goal = Math.floor(parseInt(this.state.goal) / 29.5735).toString();
+
+      this.setState({
+        ...state,
+        height,
+        weight,
+        goal
+      });
+    }
+  }
+
   render() {
     return (
       <View style={{ flex: 1, marginTop: 120 }}>
@@ -12,14 +106,15 @@ class Goal extends Component {
             onPress={() => this.props.navigation.navigate("Settings")}
           />
           <Text>내 정보</Text>
+          <Button title="저장" onPress={() => this.props.saveGoal(this.state)} />
         </View>
         <View>
           <Text>목표</Text>
           <View style={{ flexDirection: "row" }}>
             <Text>일일목표량</Text>
             <TextInput
-              value={this.props.goal.toString()}
-              onChangeText={goal => this.props.setGoal(goal)}
+              value={this.state.goal}
+              onChangeText={goal => this.setState({ goal })}
             />
           </View>
           <Text>
@@ -29,9 +124,9 @@ class Goal extends Component {
           <View style={{ flexDirection: "row" }}>
             <Text>성별</Text>
             <Picker
-              selectedValue={this.props.gender}
+              selectedValue={this.state.gender}
               onValueChange={gender => {
-                this.props.setGender(gender);
+                this.setState({ gender });
               }}
             >
               <Picker.Item label="남자" value="male" />
@@ -41,27 +136,29 @@ class Goal extends Component {
           <View style={{ flexDirection: "row" }}>
             <Text>키</Text>
             <TextInput
-              value={this.props.height.toString()}
+              value={this.state.height}
               onChangeText={height => {
-                this.props.setHeight(height);
+                this.setState({ height });
               }}
+              onBlur={this.onBlur}
             />
           </View>
           <View style={{ flexDirection: "row" }}>
             <Text>몸무게</Text>
             <TextInput
-              value={this.props.weight.toString()}
+              value={this.state.weight}
               onChangeText={weight => {
-                this.props.setWeight(weight);
+                this.setState({ weight });
               }}
+              onBlur={this.onBlur}
             />
           </View>
           <View style={{ flexDirection: "row" }}>
             <Text>운동량</Text>
             <Picker
-              selectedValue={this.props.training}
+              selectedValue={this.state.training}
               onValueChange={training => {
-                this.props.setTraining(training);
+                this.setState({ training });
               }}
             >
               <Picker.Item label="숨쉬기" value="breath" />
@@ -72,9 +169,9 @@ class Goal extends Component {
           <View style={{ flexDirection: "row" }}>
             <Text>측정단위</Text>
             <Picker
-              selectedValue={this.props.unit}
+              selectedValue={this.state.unit}
               onValueChange={unit => {
-                this.props.setUnit(unit);
+                this.setUnit(unit);
               }}
             >
               <Picker.Item label="미터법" value="metric" />
@@ -100,12 +197,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    setGoal: goal => dispatch(setGoal(goal)),
-    setGender: gender => dispatch(setGender(gender)),
-    setHeight: height => dispatch(setHeight(height)),
-    setWeight: weight => dispatch(setWeight(weight)),
-    setTraining: training => dispatch(setTraining(training)),
-    setUnit: unit => dispatch(setUnit(unit))
+    saveGoal: obj => dispatch(saveGoal(obj))
   };
 };
 

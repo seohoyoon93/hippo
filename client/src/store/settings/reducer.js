@@ -1,4 +1,4 @@
-import { GET_USER_SETTING } from "./actionTypes";
+import { GET_USER_SETTING, SAVE_GOAL } from "./actionTypes";
 
 const initialState = {
   goal: null,
@@ -30,6 +30,16 @@ const settingsReducer = (state = initialState, action) => {
         notification_period: action.data.notification_period,
         allowed_notification: action.data.allowed_notification,
         lang: action.data.lang
+      };
+
+    case SAVE_GOAL:
+      return {
+        ...state,
+        goal: parseInt(action.obj.goal),
+        gender: action.obj.gender,
+        height: parseInt(action.obj.height),
+        weight: parseInt(action.obj.weight),
+        unit: action.obj.unit
       };
 
     default:
